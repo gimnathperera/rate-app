@@ -22,7 +22,6 @@ enum STEPS {
   LOCATION = 1,
   IMAGES = 2,
   DESCRIPTION = 3,
-  PRICE = 4,
 }
 
 const RentModal = () => {
@@ -85,7 +84,7 @@ const RentModal = () => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    if (step !== STEPS.PRICE) {
+    if (step !== STEPS.DESCRIPTION) {
       return onNext();
     }
 
@@ -109,7 +108,7 @@ const RentModal = () => {
   };
 
   const actionLabel = useMemo(() => {
-    if (step === STEPS.PRICE) {
+    if (step === STEPS.DESCRIPTION) {
       return "Create";
     }
 
@@ -204,27 +203,6 @@ const RentModal = () => {
         <Input
           id="description"
           label="Description"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    );
-  }
-
-  if (step === STEPS.PRICE) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="Now, set your price"
-          subtitle="How much do you charge per night?"
-        />
-        <Input
-          id="price"
-          label="Price"
-          formatPrice
-          type="number"
           disabled={isLoading}
           register={register}
           errors={errors}

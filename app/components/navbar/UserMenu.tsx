@@ -41,9 +41,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
   return (
     <div className="relative">
       <div className="flex flex-row items-center gap-3">
-        <div
-          onClick={onRent}
-          className="
+        {currentUser?.type === "ADMIN" && (
+          <div
+            onClick={onRent}
+            className="
             hidden
             md:block
             text-sm 
@@ -55,9 +56,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             transition 
             cursor-pointer
           "
-        >
-          Add your place
-        </div>
+          >
+            Add your place
+          </div>
+        )}
+
         <div
           onClick={toggleOpen}
           className="
@@ -88,8 +91,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
             absolute 
             rounded-xl 
             shadow-md
-            w-[40vw]
-            md:w-3/4 
+            w-32
             bg-white 
             overflow-hidden 
             right-0 
@@ -105,7 +107,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ currentUser }) => {
                   onClick={() => router.push("/favorites")}
                 />
 
-                <MenuItem label="Add your place" onClick={rentModal.onOpen} />
+                {currentUser?.type === "ADMIN" && (
+                  <MenuItem label="Add your place" onClick={rentModal.onOpen} />
+                )}
+
                 <hr />
                 <MenuItem label="Logout" onClick={() => signOut()} />
               </>
