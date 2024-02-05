@@ -3,16 +3,17 @@
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import useCountries from "@/app/hooks/useCountries";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 
+import { Rating } from "@smastrom/react-rating";
 import Button from "../Button";
 import HeartButton from "../HeartButton";
-import { Rating } from "@smastrom/react-rating";
 
 import "@smastrom/react-rating/style.css";
+import useRating from "@/app/hooks/useRating";
 
 interface ListingCardProps {
   data: SafeListing;
@@ -35,8 +36,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const router = useRouter();
   const { getByValue } = useCountries();
-
   const location = getByValue(data.locationValue);
+  const [rating, setRating] = useState(data.rating || 0);
+
+  const { addRating } = useRating({
+    listingId: data.id,
+    currentUser,
+  });
 
   const handleCancel = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -51,14 +57,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
     [disabled, onAction, actionId]
   );
 
-  const price = useMemo(() => {
-    if (reservation) {
-      return reservation.totalPrice;
-    }
-
-    return data.price;
-  }, [reservation, data.price]);
-
   const reservationDate = useMemo(() => {
     if (!reservation) {
       return null;
@@ -69,6 +67,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
     return `${format(start, "PP")} - ${format(end, "PP")}`;
   }, [reservation]);
+
+  const handleRatingSubmission = async (value: number) => {
+    const result: any = await addRating(value);
+    if (result.data) {
+      setRating(result.data.rating);
+    }
+  };
 
   return (
     <div
@@ -105,9 +110,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
           "
           >
             <HeartButton listingId={data.id} currentUser={currentUser} />
-            <Rating style={{ maxWidth: 250 }} value={2} />
           </div>
         </div>
+        <Rating
+          style={{ maxWidth: 250 }}
+          value={rating}
+          // isDisabled={currentUser ? false : true}
+          onChange={handleRatingSubmission}
+        />
+
         <div className="font-semibold text-lg">
           {location?.region}, {location?.label}
         </div>
